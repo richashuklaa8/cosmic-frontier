@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><title>Cosmic Frontier</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="style.css"></head><body>
+<div id="game"></div>
+
+<div id="hud" class="hidden">
+ <div id="vig"></div>
+ <div class="hud-top glass">
+  <div class="stat"><label>HULL</label><div class="meter"><i id="hHp" class="hp"></i></div></div>
+  <div class="stat"><label>OXYGEN</label><div class="meter"><i id="hO2" class="ox"></i></div></div>
+  <div class="stat"><label>ENERGY</label><div class="meter"><i id="hEn" class="en"></i></div></div>
+  <div class="chips"><b id="hScore">0</b><span id="hRes">◆ 0 &nbsp;● 0</span><span id="hLv">LV 1</span></div>
+  <button class="icon" data-act="pause" title="Pause (P)">❚❚</button>
+ </div>
+ <div class="hud-mission glass"><div id="hMission"></div><div class="meter"><i id="hProg" class="pr"></i></div><small id="hProgTxt"></small></div>
+ <div id="toast"></div>
+</div>
+
+<div id="loading" class="screen"><h1 class="mini">COSMIC FRONTIER</h1><div class="load"><i id="loadbar"></i></div><p id="loadtxt">Starting…</p></div>
+
+<div id="menu" class="screen hidden">
+ <h1>COSMIC<span>FRONTIER</span></h1><h2>Beyond the Known Universe</h2>
+ <nav><button data-act="play">PLAY</button><button data-act="howto">HOW TO PLAY</button><button data-act="missions">MISSIONS</button><button data-act="settings">SETTINGS</button></nav>
+ <button id="snd" class="icon corner" data-act="snd" title="Sound">🔊</button>
+</div>
+
+<div id="howto" class="screen dim hidden"><div class="panel"><h3>HOW TO PLAY</h3>
+ <div class="grid2">
+  <div><h4>Controls</h4><p><kbd>W A S D</kbd> / <kbd>←↑↓→</kbd> move<br><kbd>SPACE</kbd> or mouse click: <b>scan pulse</b> (15 energy)<br><kbd>P</kbd> / <kbd>Esc</kbd> pause</p>
+  <h4>Scan pulse</h4><p>Extracts <b style="color:#ffcf5a">amber samples</b>, stuns <b style="color:#c04bff">drones</b> for 2.5s and activates <b style="color:#2de2ff">beacons</b>.</p></div>
+  <div><h4>Survive</h4><p>Oxygen drains constantly: grab <b style="color:#8fd3ff">O₂ canisters</b>. <b style="color:#ff6b81">Medkits</b> repair hull. Crystals recharge energy.</p>
+  <h4>Hazards</h4><p>Toxic vents (pulse, then burst), drones, drifting asteroids and gravity wells.</p></div>
+ </div>
+ <h4>Objectives</h4><p>Finish every objective, then fly into the <b>warp gate</b>. Stars: 1 for finishing, +1 for hull ≥ 50%, +1 for beating par time.</p>
+ <h4>Fact vs Fiction</h4><p>Fact cards tagged <span class="tag fact">REAL SCIENCE</span> are true. Cards tagged <span class="tag fic">GAME FICTION</span> explain what the game invents.</p>
+ <button data-act="back">BACK</button></div></div>
+
+<div id="missions" class="screen dim hidden"><div class="panel"><h3>MISSIONS</h3><div id="mList"></div><div id="aList"></div><button data-act="back">BACK</button></div></div>
+
+<div id="settings" class="screen dim hidden"><div class="panel narrow"><h3>SETTINGS</h3>
+ <div class="row"><span>Sound</span><button id="tSound" class="pill" data-act="tsound">ON</button></div>
+ <div class="row"><span>Music</span><button id="tMusic" class="pill" data-act="tmusic">ON</button></div>
+ <div class="row"><span>Master volume</span><input id="vMaster" type="range" min="0" max="100"></div>
+ <div class="row"><span>Music volume</span><input id="vMusic" type="range" min="0" max="100"></div>
+ <p class="keys"><kbd>WASD</kbd>/<kbd>Arrows</kbd> move · <kbd>SPACE</kbd> scan · <kbd>P</kbd> pause</p>
+ <button data-act="back">BACK</button></div></div>
+
+<div id="pause" class="screen dim hidden"><div class="panel narrow center"><h3>PAUSED</h3>
+ <button data-act="resume">RESUME</button><button data-act="restart">RESTART LEVEL</button><button data-act="settings">SETTINGS</button><button data-act="quit">MAIN MENU</button></div></div>
+
+<div id="brief" class="screen dim hidden"><div class="panel narrow center"><small id="bNum"></small><h3 id="bName"></h3><p class="sub" id="bPlanet"></p><p id="bDesc"></p><ul id="bGoals"></ul><p class="tip" id="bTip"></p><button data-act="go">BEGIN MISSION</button></div></div>
+
+<div id="complete" class="screen dim hidden"><div class="panel narrow center"><small>MISSION COMPLETE</small><h3 id="cName"></h3><div class="stars" id="cStars"></div><table id="cTable"></table><div class="learn" id="cLearn"></div>
+ <div class="btns"><button data-act="next" id="cNext">NEXT MISSION ▶</button><button data-act="replay">REPLAY</button><button data-act="quit">MAIN MENU</button></div></div></div>
+
+<div id="gameover" class="screen dim hidden"><div class="panel narrow center"><small class="red">MISSION FAILED</small><h3 id="gCause"></h3><p id="gScore"></p>
+ <div class="btns"><button data-act="replay">TRY AGAIN</button><button data-act="quit">MAIN MENU</button></div></div></div>
+
+<div id="victory" class="screen dim hidden"><div class="panel center"><small>THE FINAL FRONTIER</small><h3>VICTORY</h3><p>You crossed the warp gate and opened the way beyond the known universe.</p>
+ <div class="stars" id="vStars"></div><p id="vTotal" class="big"></p><div id="vAch"></div>
+ <div class="btns"><button data-act="again">PLAY AGAIN</button><button data-act="quit">MAIN MENU</button></div></div></div>
+
+<div id="fade"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.80.1/phaser.min.js"></script>
+<script>window.Phaser||document.write('<script src="lib/phaser.min.js"><\/script>')</script>
+<script src="audio.js"></script>
+<script src="levels.js"></script>
+<script src="ui.js"></script>
+<script src="scenes/BootScene.js"></script>
+<script src="scenes/MenuScene.js"></script>
+<script src="scenes/GameScene.js"></script>
+<script src="main.js"></script>
+</body></html>
